@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zl.mapper.GuPiaoMapper">
+	<select id="queryAllgupiao" parameterType="condition" resultType="StockInfo">
+		select Stock_Info.Stock_Num stockNum,
+		Stock_Info.Stock_Name stockName,
+		Stock_Info.Stock_Price stockPrice,
+		Stock_Info.Stock_Top stockTop,
+		Stock_Info.Stock_Low stockLow,
+		Stock_Info.Stock_Today stockToday,
+		rownum rn from Stock_Info
+	</select>
+	<select id="queryDaimaOrName" resultType="StockInfo">
+		select Stock_Info.Stock_Num stockNum,
+		Stock_Info.Stock_Name stockName,
+		Stock_Info.Stock_Price stockPrice,
+		Stock_Info.Stock_Top stockTop,
+		Stock_Info.Stock_Low stockLow,
+		Stock_Info.Stock_Today stockToday from Stock_Info 
+		<include refid="Sql" />
+	</select>
+	
+	<sql id="Sql">
+	<where>
+		<if test="daima != null and daima > 0">
+			and Stock_Info.Stock_Num = #{daima}
+		</if>
+		<if test="name != null and name != '' ">
+			and Stock_Info.Stock_Name like '%${name}%'
+		</if>
+	</where>
+	</sql>
+</mapper>

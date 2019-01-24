@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link type="text/css" rel="stylesheet" href="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/css/bootstrap.min.css"/>
+		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<script type="text/javascript" src="./js/jquery-1.8.3.min.js"></script>
+		<style>
+			#daohang{
+				width: 100%;
+				height: 80px;
+			}
+			#h1{
+				color: cornflowerblue;
+			}
+			#shuru{
+				width: 90%;
+				height: 70px;
+				background: #F0F0F0;
+				margin-left: 5%;
+			}
+			input{
+				width: 180px;
+				height: 20px;
+				border: 1px solid #BEBEBE;
+				margin-left:;
+			}
+			#a{
+				float: left;
+				margin-top: 20px;
+				margin-left: 70px;
+			}
+			#mc{
+				margin-left: 70px;
+			}
+			#butn{
+				width: 80px;
+				height: 30px;
+				border-radius:5px 5px;
+				background-color: dodgerblue;
+				color: aliceblue;
+				margin-left: 140px;
+			}
+			hr{
+				margin-top: 30px;
+				border-bottom-color: #F0F0F0
+			}
+			table{
+				margin-top: 30px;
+				border:solid #F0F0F0;
+				width: 90%;
+				margin-left: 5%;
+			}
+			td{
+				height: 50px;
+				padding: 15px;
+			}
+		</style>
+		<script type="text/javascript">
+			function getsmairu(obj){
+				var stocknum = $(obj).parents("tr").find(".s").html();
+				var a ="http://10.1.13.81:8080/SetStockNum.action?stocknum="+stocknum;
+				location.href=a;
+			}
+			
+
+		</script>
+	</head>
+	<body>
+	<div id="b">
+	
+		<div id="daohang"></div>
+		<h1 id="h1">股票详情</h1>
+		
+		<div class="container-fluid">
+			
+		<div id="shuru" class="row">
+			<div id="a" >
+			<span>代码&nbsp;&nbsp;<input type="text" placeholder="请输入" name="daima" :value="list.stockNum"></span>
+			<span id="mc">名称&nbsp;&nbsp;<input type="text" placeholder="请输入" name="name" :value="list.stockName"></span>
+			<input type="button" value="搜索" @click="sousuo()" id="butn"/>
+			</div>
+		</div>
+		<hr />
+		
+		<div id="t_th" class="row">
+			<div class="col-lg-11">
+			<table cellpadding="20" cellspacing="0" border="1px" class="table table-striped table-hover">
+			<tr>
+				<th>序号</th>
+				<th>代码</th>
+				<th>名称</th>
+				<th>最新价</th>
+				<th>涨跌幅</th>
+				<th>涨跌额</th>
+				<th>最高</th>
+				<th>最低</th>
+				<th>今开</th>
+				<th>操作</th>
+			</tr>
+			
+			<tr v-for="(li,key) in pageInfo.list" v-if="name=='' && daima==''">
+				<td>{{key+1}}</td>
+				<td class="s">{{li.stockNum}}</td>
+				<td>{{li.stockName}}</td>
+				<td>{{li.stockPrice}}</td>
+				<td>7.94%</td>
+				<td>1.08</td>
+				<td>{{li.stockTop}}</td>
+				<td>{{li.stockLow}}</td>
+				<td>{{li.stockToday}}</td>
+				<td>
+				<a href="javascript:void(0)" onclick="getsmairu(this)">买入</a>
+				
+				
+				</td>
+			</tr>
+			<tr v-for="(li,key) in list" v-if="name!=null || daima!=null">
+				<td>{{key+1}}</td>
+				<td class="s">{{li.stockNum}}</td>
+				<td>{{li.stockName}}</td>
+				<td>{{li.stockPrice}}</td>
+				<td>7.94%</td>
+				<td>1.08</td>
+				<td>{{li.stockTop}}</td>
+				<td>{{li.stockLow}}</td>
+				<td>{{li.stockToday}}</td>
+				<td>
+				<a href="javascript:void(0)" onclick="getsmairu(this)">买入</a>
+				
+				
+				</td>
+			</tr>
+			</table>
+			</div>
+		</div><!--col-->
+		</div>
+		<!--container-->
+    
+		<div class="container" align="center">
+			<ul class="pagination">
+				<li>
+					<a href="#" @click="get(1)">首页</a>
+				</li>
+				<li  v-bind:class="pageInfo.isFirstPage?'disabled':''">
+					<a href="#" @click="get(pageInfo.prePage)">上一页</a>
+				</li>
+				
+				<li v-for="pageIndex in  pageInfo.navigatepageNums" v-bind:class="pageInfo.pageNum==pageIndex?'active':''">
+					<a href="#" @click="get(pageIndex)">{{pageIndex}}</a>
+				</li>
+				<li v-bind:class="pageInfo.isLastPage?'disabled':''">
+					<a href="#" v-if="pageInfo.isLastPage" onclick="javascript:void(0);">下一页</a>
+					<a href="#" v-else @click="get(pageInfo.nextPage)">下一页</a>
+				</li>
+			</ul>
+			<ul>
+				<li>
+					{{pageInfo.startRow}}到{{pageInfo.endRow}} 共{{pageInfo.total}}条数据
+				</li>
+			</ul>
+			
+		</div>
+
+		</div>
+		<script type="text/javascript">
+		
+		 var vm = new Vue({
+		        el:'#b',
+		        data:{
+		            pageInfo:{},
+		            list:{},
+		            daima:"",
+		            name:""
+		        },
+		       methods:{
+		              get:function(pageNum){
+		                //发送get请求
+		                this.$http.get("http://10.1.13.81:8080/queryAllgupiao.action?pageNum="+pageNum).then(function(res){
+		                	this.pageInfo = res.data;
+		                },function(){
+		                    console.log('请求失败处理');
+		                });
+		            },    
+		        sousuo:function(){
+	                //发送get请求
+	              	var daima=$("input[name='daima']").val();
+					var name=$("input[name='name']").val();
+					this.daima=daima;
+					this.name=name;
+	                this.$http.get('http://10.1.13.81:8080/queryDaimaAndName.action',{params:{daima:daima,name:name},}).then(function(res){
+	                	//alert(res.data);
+	                	this.list = res.data;
+	                	console.log(this.list);
+	                } ,function(){
+	                    console.log('请求失败处理');
+	                } 
+	                );
+	            }
+		        },
+		         mounted(){
+		         	 this.get(1);  
+		        	
+		        }
+		        });
+		
+		</script>
+	</body>
+</html>

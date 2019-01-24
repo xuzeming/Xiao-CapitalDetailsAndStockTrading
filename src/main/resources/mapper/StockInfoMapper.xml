@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zl.mapper.StockInfoMapper">
+	
+	<select id="queryAllUserOwnStock" parameterType="Condition" resultType="StockInfo">
+       select s.Stock_Num stockNum,s.Stock_Name stockName,s.Stock_Price stockPrice,
+       s.Stock_Today stockToday,rownum rn from Stock_Info s
+       join SH_Own_Stock sh on sh.Stock_Num = s.Stock_Num
+       join SZ_Own_Stock zh on zh.Stock_Num = s.Stock_Num
+		
+	</select>
+	
+	<select id="queryStockNum" resultType="StockInfo" >
+		select  Stock_Info.Stock_Num stockNum,
+			Stock_Info.Stock_Name stockName,
+			Stock_Info.Stock_Price stockPrice
+		from Stock_Info where Stock_Num=#{stocknum}
+	</select>
+</mapper>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+<script type="text/javascript" src="./js/jquery-1.8.3.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<style type="text/css">
+			#box1 {
+				width: 90%;
+				height: 50px;
+				background: #F0F0F0;
+				border: hidden;
+				margin-left: 5%;
+			}
+			
+			#box2 {
+				width: 90%;
+				height: 50px;
+				background: #F0F0F0;
+				border: hidden;
+				margin-left: 5%;
+				margin-top: 50px;
+			}
+			
+			.in_box {
+				float: left;
+				margin-top: 13px;
+				margin-left: 10px;
+			}
+		</style>
+
+		<style>
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			
+			table th {
+				height: 20px;
+				border: solid 1px #B0C4DE;
+				padding: 5px;
+				background-color: #F0F0F0;
+				text-align: center;
+			}
+			
+			table td {
+				height: 20px;
+				border: solid 1px #B0C4DE;
+				padding: 5px;
+				text-align: center;
+			}
+			/*			
+			p{
+				text-align: center;
+			}
+*/
+			#chongzhi{
+				width: 80px;
+				height: 30px;
+				border-radius:5px 5px;
+				background-color: dodgerblue;
+				color: aliceblue;
+				margin-left: 140px;
+			}
+			#goumai{
+				width: 80px;
+				height: 30px;
+				border-radius:5px 5px;
+				background-color: dodgerblue;
+				color: aliceblue;
+				margin-left: 140px;
+			}
+		</style>
+		<link type="text/css" rel="stylesheet" href="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/css/bootstrap.min.css" />
+		<script type="text/javascript">
+			function getmairu(obj){
+				var stocknum = $(obj).parents("tr").find(".stocknum").html();
+				 /* alert(stocknum); */ 
+				 var a="http://10.1.13.81:8080/SetStockNum.action?stocknum="+stocknum; 
+				location.href=a;	//"http://10.1.13.81:8080/queryByStockNum.action?stockNum="+123;
+			}
+		</script>
+	</head>
+
+	<body>
+		<div id="box">
+		
+		<div style="margin-left: 20px;">
+			<h1><font color="00CCCC">资产明细</font></h1>
+		</div>
+
+		<div id="box1">
+			<div class="in_box">
+				<p style="">
+					<font size="4">
+						<span>账户余额</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>余额:&nbsp;&nbsp;<label id="">50000</label>元</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>每日收益:&nbsp;&nbsp;<label id="">0.85</label>元</span>
+						<a href="http://10.1.13.213:8080/Recharge.html"><input type="button" id="chongzhi" value="充值"/></a>
+					</font>
+				</p>
+			</div>
+		</div>
+
+		<div id="box2">
+			<div class="in_box">
+				<p style="">
+					<font size="4">
+						<span>股票产品</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>总额:&nbsp;&nbsp;<label id="">64400</label>元</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>估算持仓盈亏:&nbsp;&nbsp;<font color="red">0.90</font>元</span>
+						<a href="http://10.1.13.81:8080/chakangupiao.html"><input type="button" id="goumai" value="购买"/></a>
+					</font>
+				</p>
+			</div>
+		</div>
+		<br />
+		<hr />
+
+		<div style="margin-left: 5%;">
+			<h2>我的股票</h2>
+		</div>
+
+		<div id="a" style="align-content: center; margin-left: 5%; margin-right: 5%;">
+			<table>
+				<tr>
+					<th>序号</th>
+					<th>代码</th>
+					<th>名称</th>
+					<th>金额</th>
+					<th>持仓盈亏</th>
+					<th>操作</th>
+				</tr>
+				
+				<tr v-for="(l,key) in pageInfo.list">
+					<td>{{key+1}}</td>
+					<td class="stocknum">{{l.stockNum}}</td>
+					<td>{{l.stockName}}</td>
+					<td>{{l.stockPrice}}</td>
+					<td>{{l.stockNum}}</td>
+					<td>
+						<a href="javascript:void(0)" onclick="getmairu(this)">买入</a>
+						&nbsp;&nbsp;
+						<a href="javascript:void(0)" onclick="getmairu(this)">卖出</a>
+					</td>
+					</tr>
+			</table>
+			</div>
+		<div class="container" align="center">
+			<ul class="pagination">
+				<li>
+					<a href="#" @click="get(1)">首页</a>
+				</li>
+				<li  v-bind:class="pageInfo.isFirstPage?'disabled':''">
+					<a href="#" @click="get(pageInfo.prePage)">上一页</a>
+				</li>
+				
+				<li v-for="pageIndex in  pageInfo.navigatepageNums" v-bind:class="pageInfo.pageNum==pageIndex?'active':''">
+					<a href="#" @click="get(pageIndex)">{{pageIndex}}</a>
+				</li>
+				<li v-bind:class="pageInfo.isLastPage?'disabled':''">
+					<a href="#" v-if="pageInfo.isLastPage" onclick="javascript:void(0);">下一页</a>
+					<a href="#" v-else @click="get(pageInfo.nextPage)">下一页</a>
+				</li>
+			</ul>
+			<ul>
+				<li>
+					{{pageInfo.startRow}}到{{pageInfo.endRow}} 共{{pageInfo.total}}条数据
+				</li>
+			</ul>
+			
+		</div>
+				<!-- <script type="text/javascript">
+				//发送请求到后台
+				function sendService(num){
+					location.href="http://10.1.13.81:8080/queryAll.action";
+				}
+				
+				function getPage(num){
+					var totalPage = $("#maxpage").val();
+					if(num<=0 || num > totalPage){
+						alert("页码有问题！");
+						return;
+					}
+					sendService(num);
+				}
+			});  
+		</script> -->
+		
+		
+		</div>
+
+
+		
+		<script type="text/javascript">
+		
+		 var vm = new Vue({
+		        el:'#box',
+		        data:{
+		            
+		            pageInfo:{}
+		          
+		            
+		        },
+		        methods:{
+		            get:function(pageNum){
+		                //发送get请求
+		                this.$http.get("http://10.1.13.81:8080/queryAll.action?pageNum="+pageNum).then(function(res){
+		                	this.pageInfo = res.data;
+		                },function(){
+		                    console.log('请求失败处理');
+		                });
+		            }
+		        },
+		         mounted(){
+		        	this.get(1);
+		        } 
+		    });
+		
+		</script>
+	</body>
+
+</html>
